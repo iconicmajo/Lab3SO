@@ -6,6 +6,8 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <pthread.h>
+//Majo Castro Lemus 
+//181202
 
 int i = 0;
 int j = 0;
@@ -22,7 +24,7 @@ void *checkColumns(){
 	int columnContainsDigits = 0;
 	pid_t tid;
 
-	// Revisamos columnas individuales
+
 	#pragma omp parallel for private(tid) schedule(dynamic)
 	for (i = 0; i<boardSize; i++){
 		tid = syscall(SYS_gettid);
@@ -49,7 +51,7 @@ void *checkColumns(){
 	}
 
 	return (void*) columnContainsDigits;
-	//pthread_exit(NULL);
+
 }
 
 void *checkRows(){
@@ -57,14 +59,14 @@ void *checkRows(){
 	omp_set_num_threads(9);
 	int rowContainsDigits = 0;
 
-	// Revisamos columnas individuales
+
 	#pragma omp parallel for schedule(dynamic)
 	for (i = 0; i<boardSize; i++){
-		// Por cada iteracion creamos una lista vacia para almacenar
-		// los elementos de la columna.
+
+		
 		int rowNums[9] = {0};
 		
-		// Revisamos cada fila de la columna (cada elemento)
+
 		#pragma omp parallel for schedule(dynamic)
 		for (j = 0; j<boardSize; j++){
 			int num = sudokuBoard[i][j];
@@ -81,19 +83,19 @@ void *checkRows(){
 	}
 
 	return (void*) rowContainsDigits;
-	//pthread_exit(NULL);
+
 }
 
 
 int checkSubgrid(int gridRowStart, int gridColStart){
 	int subgridContainsDigits = 0; 	
 	
-	// Mismo principio, iteramos por la subgrid de 3x3
+
 	for (i = 0; i < (gridRowStart+3); i++){
 		int subgridNums[9] = {0};
 		for (j = 0; j < (gridColStart+3); j++){
 			int num = sudokuBoard[i][j];
-			//printf("num es %d\n", num);
+
 
 			if (num < 1 || num > 9 || subgridNums[num - 1] == 1){
 				subgridContainsDigits = 0;
